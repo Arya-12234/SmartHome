@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Home Automation</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Open Graph Tags for Social Sharing -->
+  <meta property="og:title" content="">
+  <meta property="og:description" content="">
+  <meta property="og:image" content="">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="">
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% block twitter_title %}My Site{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}Description of the page{% endblock %}">
+  <meta name="twitter:image" content="{% block twitter_image %}{% static 'img/twitter-image.png' %}{% endblock %}">
+
+  <!-- Favicons -->
+  <link href="{% static 'img/favicon.png' %}" rel="icon">
+  <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Poppins:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+<!--  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">-->
+
+  <!-- Main CSS File -->
+  <link href="{% static 'css/main.css' %}" rel="stylesheet">
+
+  <!-- Fallback for unsupported browsers -->
+  <script>
+    if (!('fetch' in window)) {
+      alert("Your browser is outdated. Please update to enjoy a better experience.");
+    }
+  </script>
+</head>
+
+<body class="index-page">
+  <!-- Header Section -->
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+      <a href="{% url 'home' %}" class="logo d-flex align-items-center me-auto">
+        <img src="{% static 'img/logo.png' %}" alt="Logo">
+        <h1>My Site</h1>
+      </a>
+
+      <!-- Navigation Bar -->
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="{% url 'home' %}" class="active">Home</a></li>
+          <li><a href="{% url 'about' %}">About</a></li>
+          <li><a href="{% url 'services' %}">Services</a></li>
+          <li><a href="{% url 'contact' %}">Contact</a></li>
+          <li><a href="{% url 'pricing_plans' %}">Pricing</a></li>
+
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'profile' %}">Profile</a></li>
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+            <li><a href="{% url 'login' %}">Login</a></li>
+            <li><a href="{% url 'register' %}">Register</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Alert Messages (Success/Error) -->
+  <div class="container">
+    {% if messages %}
+      <div class="alert-messages">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Main Content Section -->
+  <main id="content">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+
+  <footer id="footer" class="footer text-dark py-5" style="background: linear-gradient(to bottom, #e0f7fa, #ffffff);">
+    <div class="container">
+      <div class="row">
+        <!-- Contact Information -->
+        <div class="col-lg-4 col-md-6 mb-4">
+          <h5>Contact Us</h5>
+          <p>
+            <i class="bi bi-geo-alt"></i> Nairobi, Kenya<br>
+            <i class="bi bi-envelope"></i> <a href="mailto:info@mysite.com" class="text-dark">mutheuw62@gmail.com</a><br>
+            <i class="bi bi-phone"></i> <a href="tel:+1234567890" class="text-dark">+254 793595836</a>
+          </p>
+        </div>
+
+        <!-- Social Media Links -->
+        <div class="col-lg-4 col-md-6 mb-4">
+          <h5>Follow Us</h5>
+          <a href="#" class="text-dark me-3"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="text-dark me-3"><i class="bi bi-twitter"></i></a>
+          <a href="#" class="text-dark me-3"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="text-dark"><i class="bi bi-linkedin"></i></a>
+        </div>
+
+        <!-- Newsletter Subscription -->
+        <div class="col-lg-4 col-md-12 mb-4">
+          <h5>Newsletter</h5>
+          <p>Subscribe to our newsletter to stay updated.</p>
+          <form action="#" method="post" class="d-flex">
+            <input type="email" name="email" class="form-control me-2" placeholder="Your email" required>
+            <button type="submit" class="btn btn-primary">Subscribe</button>
+          </form>
+        </div>
+      </div>
+
+      <hr class="text-secondary">
+
+      <div class="row">
+        <!-- Quick Links -->
+        <div class="col-lg-6 mb-3">
+          <h5>Quick Links</h5>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-dark">About Us</a></li>
+            <li><a href="#" class="text-dark">Services</a></li>
+            <li><a href="#" class="text-dark">Pricing</a></li>
+            <li><a href="#" class="text-dark">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Copyright -->
+        <div class="col-lg-6 text-center text-lg-end">
+          <p class="mb-0">&copy; 2024 MySite. All Rights Reserved.</p>
+          <p class="mb-0">Designed by <a href="#" class="text-primary">YourName</a></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript Files -->
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+
+  <!-- Optional: Scroll to top button -->
+  <button id="scrollTopBtn" class="btn-scroll-top" onclick="scrollToTop()">&#8593;</button>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <script>
+    AOS.init();
+  </script>
+
+  {% if user.is_authenticated %}
+<script>
+    // WebSocket Connection
+    const socket = new WebSocket('ws://' + window.location.host + '/ws/chat/');
+
+    socket.onopen = function () {
+        console.log("WebSocket connection established.");
+    };
+
+    socket.onmessage = function (e) {
+        try {
+            const data = JSON.parse(e.data);
+            const message = data.message;
+
+            // Append received message to the chat window
+            const chatWindow = document.getElementById("chat-window");
+            if (chatWindow) {
+                chatWindow.innerHTML += `<div class="message received">${message}</div>`;
+                chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the bottom
+            }
+        } catch (error) {
+            console.error("Error parsing incoming message:", error);
+        }
+    };
+
+    socket.onclose = function () {
+        console.log("WebSocket connection closed.");
+    };
+
+    socket.onerror = function (error) {
+        console.error("WebSocket error:", error);
+    };
+
+    // Send a message to the WebSocket server
+    function sendMessage() {
+        const messageInput = document.getElementById("message-input");
+        if (messageInput && messageInput.value.trim() !== "") {
+            const message = messageInput.value.trim();
+
+            // Send message via WebSocket
+            socket.send(JSON.stringify({ message }));
+
+            // Display the sent message in the chat window
+            const chatWindow = document.getElementById("chat-window");
+            if (chatWindow) {
+                chatWindow.innerHTML += `<div class="message sent">${message}</div>`;
+                chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the bottom
+            }
+
+            // Clear the input field
+            messageInput.value = '';
+        }
+    }
+
+    // Create the chatbot widget container
+    (function() {
+        if (document.querySelector('#chatbot-widget')) return; // Avoid multiple widgets
+
+        const chatbotContainer = document.createElement('div');
+        chatbotContainer.id = 'chatbot-widget';
+        chatbotContainer.style.position = 'fixed';
+        chatbotContainer.style.bottom = '20px';
+        chatbotContainer.style.right = '20px';
+        chatbotContainer.style.width = '300px';
+        chatbotContainer.style.height = '400px';
+        chatbotContainer.style.background = '#fff';
+        chatbotContainer.style.border = '1px solid #ccc';
+        chatbotContainer.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+        chatbotContainer.style.borderRadius = '10px';
+        chatbotContainer.style.overflow = 'hidden';
+        chatbotContainer.style.display = 'flex';
+        chatbotContainer.style.flexDirection = 'column';
+
+        // Header
+        const chatbotHeader = document.createElement('div');
+        chatbotHeader.style.background = '#4CAF50';
+        chatbotHeader.style.color = '#fff';
+        chatbotHeader.style.padding = '8px';
+        chatbotHeader.style.textAlign = 'center';
+        chatbotHeader.style.fontWeight = 'bold';
+        chatbotHeader.style.fontSize = '14px';
+        chatbotHeader.innerText = 'Chat with us!';
+
+        const closeButton = document.createElement('button');
+        closeButton.innerText = '×';
+        closeButton.style.position = 'absolute';
+        closeButton.style.top = '5px';
+        closeButton.style.right = '10px';
+        closeButton.style.background = 'transparent';
+        closeButton.style.border = 'none';
+        closeButton.style.fontSize = '16px';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.color = '#fff';
+        closeButton.addEventListener('click', () => {
+            chatbotContainer.style.display = (chatbotContainer.style.display === 'none') ? 'flex' : 'none';
+        });
+
+        // Chat Window
+        const chatWindow = document.createElement('div');
+        chatWindow.id = 'chat-window';
+        chatWindow.style.flexGrow = '1';
+        chatWindow.style.overflowY = 'auto';
+        chatWindow.style.padding = '8px';
+        chatWindow.style.backgroundColor = '#f9f9f9';
+
+        // Input Area
+        const chatbotFooter = document.createElement('div');
+        chatbotFooter.style.display = 'flex';
+        chatbotFooter.style.borderTop = '1px solid #ccc';
+        chatbotFooter.style.padding = '8px';
+
+        const messageInput = document.createElement('input');
+        messageInput.id = 'message-input';
+        messageInput.type = 'text';
+        messageInput.placeholder = 'Type your message...';
+        messageInput.style.flexGrow = '1';
+        messageInput.style.border = '1px solid #ccc';
+        messageInput.style.borderRadius = '5px';
+        messageInput.style.padding = '5px';
+        messageInput.style.marginRight = '8px';
+
+        const sendButton = document.createElement('button');
+        sendButton.innerText = 'Send';
+        sendButton.style.background = '#4CAF50';
+        sendButton.style.color = '#fff';
+        sendButton.style.border = 'none';
+        sendButton.style.borderRadius = '5px';
+        sendButton.style.padding = '5px 10px';
+        sendButton.style.cursor = 'pointer';
+        sendButton.addEventListener('click', sendMessage);
+
+        chatbotFooter.appendChild(messageInput);
+        chatbotFooter.appendChild(sendButton);
+
+        chatbotHeader.appendChild(closeButton);
+        chatbotContainer.appendChild(chatbotHeader);
+        chatbotContainer.appendChild(chatWindow);
+        chatbotContainer.appendChild(chatbotFooter);
+        document.body.appendChild(chatbotContainer);
+    })();
+</script>
+{% endif %}
+
+</body>
+</html>

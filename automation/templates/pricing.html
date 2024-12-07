@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<!-- Pricing Section -->
+<section id="pricing" class="pricing section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Pricing</h2>
+    <p>Check Our Affordable Pricing</p>
+  </div><!-- End Section Title -->
+
+  <div class="container">
+  <div class="row gy-4">
+    {% for plan in plans %}
+      {% if plan.features.count > 0 %}
+        <div class="col-lg-3 col-md-6">
+          <div class="pricing-tem">
+            {% if plan.featured %}
+              <span class="featured">Featured</span>
+            {% endif %}
+            <h3 style="color: {{ plan.color }};">{{ plan.name }}</h3>
+            <div class="price"><sup>Ksh.</sup>{{ plan.price }}<span> / mo</span></div>
+            <div class="icon">
+              <i class="{{ plan.icon }}" style="color: {{ plan.color }};"></i>
+            </div>
+            <ul>
+              {% for feature in plan.features.all %}
+                <li class="{% if feature.unavailable %}na{% endif %}">{{ feature.name }}</li>
+              {% endfor %}
+            </ul>
+            <a href="{% url 'purchase' plan.id %}" class="btn-buy">Buy Now</a>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+  <!-- Payment Methods Section -->
+  <div class="container mt-5" data-aos="fade-up">
+    <h4>Payment Methods</h4>
+    <p>We offer multiple payment options for your convenience:</p>
+    <ul>
+      <li><strong>M-Pesa</strong>: Convenient mobile payments available via M-Pesa.</li>
+      <li><strong>KCB Bank</strong>: Secure payments via KCB Bank.</li>
+      <li><strong>Equity Bank</strong>: Pay through Equity Bank for easy transactions.</li>
+    </ul>
+  </div><!-- End Payment Methods -->
+
+</section><!-- /Pricing Section -->
+
+
+<style>
+  .na {
+  text-decoration: line-through;
+  color: gray;
+  opacity: 0.6;
+}
+
+</style>
+
+{% endblock %}

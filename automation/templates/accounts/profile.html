@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <!-- Welcome Section -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold">Hello, {{ user.username }}!</h1>
+    <p class="text-muted">
+      Good {% if now|date:"H" < 12 %}morning{% elif now|date:"H" < 18 %}afternoon{% else %}evening{% endif %}, {{ user.username }}! Here's your smart home dashboard.
+    </p>
+  </div>
+
+  <!-- Overview Section -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white text-center">
+          <h6>Profile Overview</h6>
+        </div>
+        <div class="card-body text-center">
+          <img src="{% static 'user-avatar.png' %}" alt="User Avatar" class="img-fluid rounded-circle mb-3" style="width: 100px;">
+          <h6>{{ user.username }}</h6>
+          <p>Email: <strong>{{ user.email }}</strong></p>
+          <button class="btn btn-outline-primary btn-sm">Edit Profile</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+          <h6>Dashboard Overview</h6>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-4">
+              <h6><i class="bi bi-lightbulb-fill text-warning"></i></h6>
+              <p class="mb-0"><strong>{{ devices.lighting|default:5 }}</strong> Lights Connected</p>
+            </div>
+            <div class="col-4">
+              <h6><i class="bi bi-thermometer-half text-danger"></i></h6>
+              <p class="mb-0"><strong>{{ devices.heating|default:3 }}</strong> Heating Zones</p>
+            </div>
+            <div class="col-4">
+              <h6><i class="bi bi-shield-fill-check text-success"></i></h6>
+              <p class="mb-0"><strong>{{ devices.security|default:2 }}</strong> Security Devices</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preferences Section -->
+  <form method="POST" class="shadow-sm p-4 rounded bg-light">
+    {% csrf_token %}
+    <h5 class="mb-4">Manage Preferences</h5>
+    <div class="accordion" id="preferencesAccordion">
+
+      <!-- Lighting Preferences -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="lightingHeader">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#lightingCollapse" aria-expanded="true" aria-controls="lightingCollapse">
+            Lighting Preferences <i class="bi bi-lightbulb ms-2"></i>
+          </button>
+        </h2>
+        <div id="lightingCollapse" class="accordion-collapse collapse show" aria-labelledby="lightingHeader">
+          <div class="accordion-body">
+            <label for="lighting_day" class="form-label">Daytime Lighting:</label>
+            <input type="range" class="form-range" id="lighting_day" name="lighting_day" min="0" max="100" value="{{ preferences.lighting_day|default:50 }}" oninput="updatePreview('lighting_day', this.value)">
+            <p class="text-muted">Brightness: <span id="lighting_day_preview">{{ preferences.lighting_day|default:50 }}</span>%</p>
+
+            <label for="lighting_night" class="form-label mt-3">Nighttime Lighting:</label>
+            <select id="lighting_night" class="form-select" name="lighting_night">
+              <option value="dim" {% if preferences.lighting_night == 'dim' %}selected{% endif %}>Dim</option>
+              <option value="bright" {% if preferences.lighting_night == 'bright' %}selected{% endif %}>Bright</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Preferences -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="securityHeader">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#securityCollapse" aria-expanded="false" aria-controls="securityCollapse">
+            Security Settings <i class="bi bi-shield-lock ms-2"></i>
+          </button>
+        </h2>
+        <div id="securityCollapse" class="accordion-collapse collapse" aria-labelledby="securityHeader">
+          <div class="accordion-body">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="security_alarm" name="security_alarm" {% if preferences.security_alarm == 'enabled' %}checked{% endif %}>
+              <label class="form-check-label" for="security_alarm">Enable Alarm</label>
+            </div>
+            <label for="security_curtains" class="form-label mt-3">Curtain Control:</label>
+            <select id="security_curtains" class="form-select" name="security_curtains">
+              <option value="auto" {% if preferences.security_curtains == 'auto' %}selected{% endif %}>Automatic</option>
+              <option value="manual" {% if preferences.security_curtains == 'manual' %}selected{% endif %}>Manual</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Heating Preferences -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heatingHeader">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#heatingCollapse" aria-expanded="false" aria-controls="heatingCollapse">
+            Heating Preferences <i class="bi bi-thermometer ms-2"></i>
+          </button>
+        </h2>
+        <div id="heatingCollapse" class="accordion-collapse collapse" aria-labelledby="heatingHeader">
+          <div class="accordion-body">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="heating_shower" name="heating_shower" {% if preferences.heating_shower == 'on' %}checked{% endif %}>
+              <label class="form-check-label" for="heating_shower">Shower Heating</label>
+            </div>
+            <div class="form-check form-switch mt-3">
+              <input class="form-check-input" type="checkbox" id="heating_fridge" name="heating_fridge" {% if preferences.heating_fridge == 'on' %}checked{% endif %}>
+              <label class="form-check-label" for="heating_fridge">Fridge Heating</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-4 w-100">Save Preferences</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const updatePreview = (id, value) => {
+    document.getElementById(`${id}_preview`).innerText = value;
+  };
+</script>
+{% endblock %}

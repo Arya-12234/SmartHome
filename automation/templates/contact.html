@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section id="contact" class="contact py-5">
+  <div class="container" data-aos="fade-up">
+
+    <!-- Page Header -->
+    <div class="section-header text-center mb-5">
+      <h2>Contact Us</h2>
+      <p>Get in touch with us for any inquiries or assistance.</p>
+    </div>
+
+    <div class="row gy-4">
+
+      <!-- Contact Info Section -->
+      <div class="col-lg-6">
+        <div class="info-box mb-4" data-aos="fade-right">
+          <i class="bi bi-geo-alt"></i>
+          <h4>Our Address</h4>
+          <p>Nairobi, Kenya</p>
+        </div>
+        <div class="info-box mb-4" data-aos="fade-right" data-aos-delay="100">
+          <i class="bi bi-envelope"></i>
+          <h4>Email Us</h4>
+          <p><a href="mailto:info@mysite.com">home_automation@gmail.com</a></p>
+        </div>
+        <div class="info-box mb-4" data-aos="fade-right" data-aos-delay="200">
+          <i class="bi bi-phone"></i>
+          <h4>Call Us</h4>
+          <p><a href="tel:+1234567890">+254 12345678</a></p>
+        </div>
+      </div>
+
+      <!-- Contact Form Section -->
+      <div class="col-lg-6">
+        <form action="{% url 'contact' %}" method="post" class="php-email-form" data-aos="fade-left">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <input type="text" name="subject" class="form-control" placeholder="Subject" required>
+          </div>
+          <div class="mb-3">
+            <textarea name="message" class="form-control" rows="6" placeholder="Message" required></textarea>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary">Send Message</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Map Section -->
+    <div class="mt-5" data-aos="fade-up">
+      <h4 class="text-center">Find Us on the Map</h4>
+      <div class="map-container" style="height: 400px;">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d255282.3586908131!2d36.6825783570878!3d-1.3028602772359434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi!5e0!3m2!1sen!2ske!4v1733562856317!5m2!1sen!2ske" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+          width="100%"
+          height="100%"
+          style="border:0;"
+          allowfullscreen=""
+          loading="lazy">
+        </iframe>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

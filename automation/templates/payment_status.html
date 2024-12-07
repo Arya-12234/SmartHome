@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container py-5 text-center">
+        <h2>Payment Status</h2>
+        {% if status == "success" %}
+            <p class="text-success">Your payment for the {{ pricing_plan.name }} plan was successful!</p>
+            <p>Transaction ID: {{ transaction_id }}</p>
+        {% elif status == "pending" %}
+            <p class="text-warning">Your payment is being processed. Please wait for confirmation.</p>
+        {% else %}
+            <p class="text-danger">Unfortunately, your payment failed. Please try again.</p>
+        {% endif %}
+        <a href="{% url 'plans' %}" class="btn btn-primary">Back to Plans</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Preferences</title>
+</head>
+<body>
+    <h1>Update Your Preferences</h1>
+    <form method="post">
+        {% csrf_token %}
+
+        <label for="theme">Select Theme:</label>
+        <select name="theme" id="theme">
+            <option value="light" {% if preferences.theme == 'light' %}selected{% endif %}>Light</option>
+            <option value="dark" {% if preferences.theme == 'dark' %}selected{% endif %}>Dark</option>
+        </select>
+        <br><br>
+
+        <label for="notifications_enabled">Enable Notifications:</label>
+        <input type="checkbox" name="notifications_enabled" id="notifications_enabled" {% if preferences.notifications_enabled %}checked{% endif %}>
+        <br><br>
+
+        <button type="submit">Save Preferences</button>
+    </form>
+
+    <nav>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'home' %}">Home</a>
+    </nav>
+</body>
+</html>

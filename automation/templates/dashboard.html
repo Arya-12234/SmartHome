@@ -1,0 +1,18 @@
+{% extends 'automation/base.html' %}
+
+{% block title %}Dashboard - Home Automation{% endblock %}
+
+{% block content %}
+<section style="text-align: center; padding: 2rem;">
+    <h1>Your Devices</h1>
+    <ul>
+        {% for device in devices %}
+        <li>
+            {{ device.name }} - Status: {{ device.status|yesno:"ON,OFF" }},
+            Brightness: {{ device.brightness }}%
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'preferences' %}">Update Preferences</a>
+</section>
+{% endblock %}

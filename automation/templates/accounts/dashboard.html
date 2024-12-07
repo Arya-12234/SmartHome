@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 pt-5" data-aos="fade-up">
+    <!-- Dashboard Overview Section -->
+    <div class="row mb-4 text-center">
+        <div class="col">
+            <h1 class="section-title">Dashboard Overview</h1>
+            <p class="lead">Gain insights into device activities, performance metrics, and more.</p>
+        </div>
+    </div>
+
+    <!-- Lottie Animation Section - Centered -->
+    <div class="row mb-5 justify-content-center text-center">
+        <div class="col-md-6">
+            <dotlottie-player
+                src="https://lottie.host/eb84a2d2-b569-4418-b81e-d7cbdcec3a18/IfZRbIvA8m.lottie"
+                background="transparent"
+                speed="1"
+                style="width: 100%; height: 300px;"
+                loop
+                autoplay>
+            </dotlottie-player>
+        </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div class="summary-box card p-4 shadow-sm bg-light">
+                <h4>Total Devices</h4>
+                <p class="display-6 text-primary">{{ total_devices }}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="summary-box card p-4 shadow-sm bg-light">
+                <h4>Active Devices</h4>
+                <p class="display-6 text-success">{{ active_devices }}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="summary-box card p-4 shadow-sm bg-light">
+                <h4>Inactive Devices</h4>
+                <p class="display-6 text-danger">{{ inactive_devices }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <!-- Bar Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card p-4 shadow-sm">
+                <h5 class="text-center">Device Activity Over Time</h5>
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+        <!-- Pie Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card p-4 shadow-sm">
+                <h5 class="text-center">Device Status Distribution</h5>
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS for Styling -->
+<style>
+    .section-title {
+        font-size: 2.1rem; /* Reduced font size */
+        font-weight: normal;
+        color: #343a40;
+        margin-bottom: 1px; /* Reduced bottom margin */
+    }
+
+    .lead {
+        font-size: 1.1rem; /* Reduced font size */
+        color: #6c757d;
+        margin-top: 0; /* No top margin */
+        margin-bottom: 0; /* No bottom margin */
+    }
+
+    .summary-box {
+        border-radius: 10px;
+        transition: transform 0.3s ease-in-out;
+    }
+    .summary-box:hover {
+        transform: scale(1.05);
+    }
+</style>
+
+<!-- JavaScript for Charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+<script>
+    // Bar Chart Data
+    const barChartCtx = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(barChartCtx, {
+        type: 'bar',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+            datasets: [{
+                label: 'Active Devices',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true },
+            },
+            scales: {
+                x: { title: { display: true, text: 'Month' } },
+                y: { title: { display: true, text: 'Devices' } },
+            }
+        }
+    });
+
+    // Pie Chart Data
+    const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+    const pieChart = new Chart(pieChartCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Active', 'Inactive'],
+            datasets: [{
+                label: 'Device Status',
+                data: [{{ active_devices }}, {{ inactive_devices }}],
+                backgroundColor: ['#28a745', '#dc3545'],
+                borderColor: ['#ffffff', '#ffffff'],
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+            },
+        }
+    });
+</script>
+{% endblock %}
