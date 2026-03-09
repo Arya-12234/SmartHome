@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Payment for {{ plan.name }}</h2>
+    <p class="text-center">Price: KSh {{ plan.price }}</p>
+
+    {% if messages %}
+        <div class="alert alert-info">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Display any form errors -->
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label for="id_phone_number" class="form-label">M-Pesa Phone Number</label>
+                    {{ form.phone_number }}  <!-- Render the phone number field -->
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_amount" class="form-label">Amount to Pay</label>
+                    <input type="text" class="form-control" id="id_amount" value="KSh {{ plan.price }}" readonly>
+                </div>
+
+                {% if form.confirmation_code %}
+                <div class="mb-3">
+                    <label for="id_confirmation_code" class="form-label">M-Pesa Confirmation Code (if applicable)</label>
+                    {{ form.confirmation_code }}  <!-- Render the confirmation code field -->
+                </div>
+                {% endif %}
+
+<!--                {% if form.password %}-->
+<!--                <div class="mb-3">-->
+<!--                    <label for="id_password" class="form-label">M-Pesa PIN</label>-->
+<!--                    {{ form.password }}  &lt;!&ndash; Render the password field &ndash;&gt;-->
+<!--                </div>-->
+<!--                {% endif %}-->
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Pay via M-Pesa</button>
+                    <a href="/" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
