@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Home Automation</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Open Graph Tags for Social Sharing -->
+  <meta property="og:title" content="">
+  <meta property="og:description" content="">
+  <meta property="og:image" content="">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="">
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% block twitter_title %}My Site{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}Description of the page{% endblock %}">
+  <meta name="twitter:image" content="{% block twitter_image %}{% static 'img/twitter-image.png' %}{% endblock %}">
+
+  <!-- Favicons -->
+  <link href="{% static 'img/favicon.png' %}" rel="icon">
+  <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Poppins:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+<!--  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">-->
+
+  <!-- Main CSS File -->
+  <link href="{% static 'css/main.css' %}" rel="stylesheet">
+
+  <!-- Fallback for unsupported browsers -->
+  <script>
+    if (!('fetch' in window)) {
+      alert("Your browser is outdated. Please update to enjoy a better experience.");
+    }
+  </script>
+</head>
+
+<body class="index-page">
+  <!-- Header Section -->
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+      <a href="{% url 'home' %}" class="logo d-flex align-items-center me-auto">
+        <img src="{% static 'img/logo.png' %}" alt="Logo">
+        <h1>SmartHome</h1>
+      </a>
+
+      <!-- Navigation Bar -->
+      <!-- Navigation Bar -->
+<nav id="navmenu" class="navmenu">
+  <ul>
+    <li><a href="{% url 'home' %}" class="active">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#contact">Contact</a></li>
+
+    {% if user.is_authenticated %}
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
+          <i class="bi bi-person"></i> {{ user.username }} <i class="bi bi-chevron-down"></i>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="{% url 'profile' %}" class="dropdown-item">Profile</a></li>
+          <li><a href="{% url 'room' %}" class="dropdown-item">Room</a></li>
+          <li><a href="{% url 'devices' %}" class="dropdown-item">Devices</a></li>
+          <li><a href="{% url 'settings' %}" class="dropdown-item">Settings</a></li>
+          {% if user.is_superuser %}
+            <li><a href="{% url 'admin_dashboard' %}" class="dropdown-item">Admin Dashboard</a></li>
+          {% endif %}
+          <li><a href="{% url 'logout' %}" class="dropdown-item">Logout</a></li>
+        </ul>
+      </li>
+    {% else %}
+      <li><a href="{% url 'login' %}">Login</a></li>
+    {% endif %}
+  </ul>
+</nav>
+
+    </div>
+  </header>
+
+  <!-- Alert Messages (Success/Error) -->
+  <div class="container">
+    {% if messages %}
+      <div class="alert-messages">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Main Content Section -->
+  <main id="content">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- Services Section -->
+  <section id="services" class="services section">
+
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+      <h2>Services</h2>
+      <p>Check Our Services<br></p>
+    </div><!-- End Section Title -->
+
+    <div class="container">
+
+      <div class="row gy-4">
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+          <div class="service-item item-cyan position-relative">
+            <i class="bi bi-activity icon"></i>
+            <h3>Smart Home Upgrades</h3>
+            <p>Upgrading existing devices with the latest smart technology.</p>
+            <a href="#" class="read-more stretched-link"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div><!-- End Service Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+          <div class="service-item item-orange position-relative">
+            <i class="bi bi-broadcast icon"></i>
+            <h3>Energy Audits & Optimization</h3>
+            <p>Comprehensive energy audits to assess your home’s energy efficiency.</p>
+            <a href="#" class="read-more stretched-link"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div><!-- End Service Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+          <div class="service-item item-teal position-relative">
+            <i class="bi bi-easel icon"></i>
+            <h3>Smart Home Consultation</h3>
+            <p>Personalized home assessments to understand your needs.</p>
+            <a href="#" class="read-more stretched-link"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div><!-- End Service Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+          <div class="service-item item-red position-relative">
+            <i class="bi bi-bounding-box-circles icon"></i>
+            <h3>System Customization</h3>
+            <p>Tailored automation settings for specific activities or routines (e.g., bedtime, cooking, entertainment).</p>
+            <a href="#" class="read-more stretched-link"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div><!-- End Service Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+          <div class="service-item item-indigo position-relative">
+            <i class="bi bi-calendar4-week icon"></i>
+            <h3>Ongoing Support & Maintenance</h3>
+            <p>24/7 customer support to resolve issues quickly.</p>
+            <a href="#" class="read-more stretched-link"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div><!-- End Service Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+          <div class="service-item item-pink position-relative">
+            <i class="bi bi-chat-square-text icon"></i>
+            <h3>Home Security Audits</h3>
+            <p>Conducting a full security audit to identify vulnerabilities.</p>
+            <a href="#" class="read-more stretched-link"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div><!-- End Service Item -->
+
+      </div>
+
+    </div>
+
+  </section><!-- /Services Section -->
+
+  <!-- Pricing Section -->
+  <section id="pricing" class="pricing section">
+
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+      <h2>Pricing</h2>
+      <p>Check Our Affordable Pricing<br></p>
+    </div><!-- End Section Title -->
+
+    <!-- loop -->
+
+    <div class="container">
+  <div class="row gy-4">
+    {% for plan in plans %}
+      <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="{{ forloop.counter0|add:"1" }}00">
+        <div class="pricing-tem">
+          {% if forloop.first %}
+            <span class="featured">Featured</span>
+          {% endif %}
+          <h3>{{ plan.name }}</h3>
+          <div class="price">
+            <sup>Ksh</sup>{{ plan.price|floatformat:0 }}<span> / mo</span>
+          </div>
+          <div class="icon">
+            <i class="bi bi-box"></i>  <!-- Optional: dynamic icons if you update model -->
+          </div>
+          <ul>
+            {% for feature in plan.features.splitlines %}
+              {% if "no" in feature|lower or "limited" in feature|lower %}
+                <li class="na">{{ feature }}</li>
+              {% else %}
+                <li>{{ feature }}</li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+          <a href="/payments/{{ plan.id }}" class="btn-buy">Get Started</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+  </div>
+</div>
+</section>
+
+
+
+
+  <!-- Recent Posts Section -->
+  <section id="recent-posts" class="recent-posts section">
+
+
+  <!-- Contact Section -->
+  <section id="contact" class="contact section">
+
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+      <h2>Contact</h2>
+      <p>Contact Us</p>
+    </div><!-- End Section Title -->
+
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+      <div class="row gy-4">
+
+        <div class="col-lg-6">
+
+          <div class="row gy-4">
+            <div class="col-md-6">
+              <div class="info-item" data-aos="fade" data-aos-delay="200">
+                <i class="bi bi-geo-alt"></i>
+                <h3>Address</h3>
+                <p>P.O BOX 00608</p>
+                <p>Nairobi, Kenya</p>
+              </div>
+            </div><!-- End Info Item -->
+
+            <div class="col-md-6">
+              <div class="info-item" data-aos="fade" data-aos-delay="300">
+                <i class="bi bi-telephone"></i>
+                <h3>Call Us</h3>
+                <p>+254 12345678</p>
+                <p>+254 87654321</p>
+              </div>
+            </div><!-- End Info Item -->
+
+            <div class="col-md-6">
+              <div class="info-item" data-aos="fade" data-aos-delay="400">
+                <i class="bi bi-envelope"></i>
+                <h3>Email Us</h3>
+                <p>home_automation@gmail.com</p>
+                <p>automation@gmail.com</p>
+              </div>
+            </div><!-- End Info Item -->
+
+            <div class="col-md-6">
+              <div class="info-item" data-aos="fade" data-aos-delay="500">
+                <i class="bi bi-clock"></i>
+                <h3>Open Hours</h3>
+                <p>Monday - Friday</p>
+                <p>9:00AM - 05:00PM</p>
+              </div>
+            </div><!-- End Info Item -->
+
+          </div>
+
+        </div>
+
+        <div class="col-lg-6">
+          <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+            <div class="row gy-4">
+
+              <div class="col-md-6">
+                <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+              </div>
+
+              <div class="col-md-6 ">
+                <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
+              </div>
+
+              <div class="col-12">
+                <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
+              </div>
+
+              <div class="col-12">
+                <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
+              </div>
+
+              <div class="col-12 text-center">
+                <div class="loading">Loading</div>
+                <div class="error-message"></div>
+                <div class="sent-message">Your message has been sent. Thank you!</div>
+
+                <button type="submit">Send Message</button>
+              </div>
+
+            </div>
+          </form>
+        </div><!-- End Contact Form -->
+        <!-- Map Section -->
+      <div class="mt-5" data-aos="fade-up">
+        <h4 class="text-center">Find Us on the Map</h4>
+        <div class="map-container" style="height: 400px; display: flex; justify-content: center;">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d255282.3586908131!2d36.6825783570878!3d-1.3028602772359434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi!5e0!3m2!1sen!2ske!4v1733562856317!5m2!1sen!2ske" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+            width="100%"
+            height="100%"
+            style="border:0;"
+            allowfullscreen=""
+            loading="lazy">
+          </iframe>
+  
+        </div>
+      </div>
+  
+    </div>
+
+      </div>
+
+    </div>
+
+  </section><!-- /Contact Section -->
+
+  
+  
+      
+  </section>
+  
+
+</main>
+
+
+  <footer id="footer" class="footer text-dark py-5" style="background: linear-gradient(to bottom, #e0f7fa, #ffffff);">
+    <div class="container">
+      <div class="row">
+        <!-- Contact Information -->
+        <div class="col-lg-4 col-md-6 mb-4">
+          <h5>Contact Us</h5>
+          <p>
+            <i class="bi bi-geo-alt"></i> Nairobi, Kenya<br>
+            <i class="bi bi-envelope"></i> <a href="mailto:info@mysite.com" class="text-dark">mutheuw62@gmail.com</a><br>
+            <i class="bi bi-phone"></i> <a href="tel:+1234567890" class="text-dark">+254 793595836</a>
+          </p>
+        </div>
+
+        <!-- Social Media Links -->
+        <div class="col-lg-4 col-md-6 mb-4">
+          <h5>Follow Us</h5>
+          <a href="#" class="text-dark me-3"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="text-dark me-3"><i class="bi bi-twitter"></i></a>
+          <a href="#" class="text-dark me-3"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="text-dark"><i class="bi bi-linkedin"></i></a>
+        </div>
+
+        <!-- Newsletter Subscription -->
+        <div class="col-lg-4 col-md-12 mb-4">
+          <h5>Newsletter</h5>
+          <p>Subscribe to our newsletter to stay updated.</p>
+          <form action="#" method="post" class="d-flex">
+            <input type="email" name="email" class="form-control me-2" placeholder="Your email" required>
+            <button type="submit" class="btn btn-primary">Subscribe</button>
+          </form>
+        </div>
+      </div>
+
+      <hr class="text-secondary">
+
+      <div class="row">
+        <!-- Quick Links -->
+        <div class="col-lg-6 mb-3">
+          <h5>Quick Links</h5>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-dark">About Us</a></li>
+            <li><a href="#" class="text-dark">Services</a></li>
+            <!-- <li><a href="#" class="text-dark">Pricing</a></li> -->
+            <li><a href="#" class="text-dark">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Copyright -->
+        <div class="col-lg-6 text-center text-lg-end">
+          <p class="mb-0">&copy; SmartHome. All Rights Reserved.</p>
+          <p class="mb-0">Designed by <a href="#" class="text-primary">Winnie Mutheu</a></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Chatbot Icon -->
+<div id="chatbot-icon">
+  <img src="{% static 'chat_icon.png' %}" alt="Chat">
+</div>
+
+<!-- Chatbox -->
+<div id="chatbox-container">
+  <div id="chatbox-header">
+      Chatbot
+      <span id="close-chat">&times;</span>
+  </div>
+  <div id="chatbox"></div>
+  <form id="chat-form">
+      <input type="text" id="user-input" placeholder="Type a message..." required>
+      <button type="submit" id="send-btn">Send</button>
+  </form>
+</div>
+
+<script>
+  // Hide chatbot on payment page
+  if (window.location.pathname.includes("payment")) {
+      document.getElementById('chatbot-icon').style.display = 'none';
+      document.getElementById('chatbox-container').style.display = 'none';
+  }
+
+  // Get elements
+  const chatIcon = document.getElementById('chatbot-icon');
+  const chatContainer = document.getElementById('chatbox-container');
+  const closeChat = document.getElementById('close-chat');
+  const chatForm = document.getElementById('chat-form');
+  const userInput = document.getElementById('user-input');
+  const chatbox = document.getElementById('chatbox');
+
+  // Toggle chatbox visibility
+  chatIcon.addEventListener('click', () => {
+      chatContainer.style.display = 'flex';
+  });
+
+  closeChat.addEventListener('click', () => {
+      chatContainer.style.display = 'none';
+  });
+
+  // Handle chat submission
+  chatForm.onsubmit = async function(e) {
+      e.preventDefault();
+      let userMessage = userInput.value.trim();
+      if (!userMessage) return;
+
+      // Display user message
+      chatbox.innerHTML += `<div class="user-message">${userMessage}</div>`;
+      chatbox.scrollTop = chatbox.scrollHeight;
+      userInput.value = '';
+
+      // Send message to API
+      try {
+          let response = await fetch("{% url 'chatbot:api' %}", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  "X-CSRFToken": "{{ csrf_token }}"
+              },
+              body: JSON.stringify({ message: userMessage })
+          });
+
+          let data = await response.json();
+
+          // Display bot response
+          chatbox.innerHTML += `<div class="bot-message">${data.message || "Sorry, I didn’t understand that."}</div>`;
+          chatbox.scrollTop = chatbox.scrollHeight;
+      } catch (error) {
+          console.error("Chatbot error:", error);
+          chatbox.innerHTML += `<div class="bot-message">Error: Could not reach the server.</div>`;
+      }
+  };
+</script>
+
+<style>
+  /* Chatbot icon */
+  #chatbot-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: #87CEFA; /* Light Blue */
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  #chatbot-icon img {
+      width: 30px;
+      height: 30px;
+  }
+
+  /* Chatbox container */
+  #chatbox-container {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 300px;
+      background-color: #E3F2FD; /* Light Blue Shade */
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+  }
+
+  /* Chatbox header */
+  #chatbox-header {
+      background-color: #87CEFA; /* Light Blue */
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      position: relative;
+  }
+
+  #close-chat {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 18px;
+  }
+
+  /* Chat messages */
+  #chatbox {
+      height: 300px;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+  }
+
+  .user-message, .bot-message {
+      margin: 5px;
+      padding: 8px;
+      border-radius: 5px;
+      max-width: 70%;
+  }
+
+  .user-message {
+      background-color: #B0E0E6; /* Lighter Blue */
+      align-self: flex-end;
+  }
+
+  .bot-message {
+      background-color: #ADD8E6; /* Another Light Blue */
+      align-self: flex-start;
+  }
+
+  /* Chat input */
+  #chat-form {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ccc;
+      background-color: #E3F2FD; /* Light Blue Shade */
+  }
+
+  #user-input {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      background-color: white;
+  }
+
+  #send-btn {
+      background-color: #87CEFA; /* Light Blue */
+      color: white;
+      border: none;
+      padding: 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 5px;
+  }
+
+  #send-btn:hover {
+      background-color: #5CACEE; /* Slightly darker blue */
+  }
+</style>
+
+
+  <!-- JavaScript Files -->
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+
+  <!-- Optional: Scroll to top button -->
+  <button id="scrollTopBtn" class="btn-scroll-top" onclick="scrollToTop()">&#8593;</button>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <script>
+    AOS.init();
+  </script>
+
+  {% if user.is_authenticated %}
+<script>
+    // WebSocket Connection
+    const socket = new WebSocket('ws://' + window.location.host + '/ws/chat/');
+
+    socket.onopen = function () {
+        console.log("WebSocket connection established.");
+    };
+
+    socket.onmessage = function (e) {
+        try {
+            const data = JSON.parse(e.data);
+            const message = data.message;
+
+            // Append received message to the chat window
+            const chatWindow = document.getElementById("chat-window");
+            if (chatWindow) {
+                chatWindow.innerHTML += `<div class="message received">${message}</div>`;
+                chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the bottom
+            }
+        } catch (error) {
+            console.error("Error parsing incoming message:", error);
+        }
+    };
+
+    socket.onclose = function () {
+        console.log("WebSocket connection closed.");
+    };
+
+    socket.onerror = function (error) {
+        console.error("WebSocket error:", error);
+    };
+
+    // Send a message to the WebSocket server
+    function sendMessage() {
+        const messageInput = document.getElementById("message-input");
+        if (messageInput && messageInput.value.trim() !== "") {
+            const message = messageInput.value.trim();
+
+            // Send message via WebSocket
+            socket.send(JSON.stringify({ message }));
+
+            // Display the sent message in the chat window
+            const chatWindow = document.getElementById("chat-window");
+            if (chatWindow) {
+                chatWindow.innerHTML += `<div class="message sent">${message}</div>`;
+                chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to the bottom
+            }
+
+            // Clear the input field
+            messageInput.value = '';
+        }
+    }
+
+
+
+    
+</script>
+{% endif %}
+
+</body>
+</html>

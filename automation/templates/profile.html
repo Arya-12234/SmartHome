@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Smart Home Control Center{% endblock %}</title>
+  
+{% block head %}
+
+<!-- css -->
+{% end block %}
+</head>
+<body>
+  <div class="bg-particles" id="particles"></div>
+  
+  <div class="dashboard-container">
+    <!-- Header -->
+     {% block header %}
+    <div class="dashboard-header">
+      <h1>Welcome Home, {{ user_name }}</h1>
+      <div class="time-display" id="currentTime"></div>
+      <div class="weather-widget">
+        <span>🌤️ 22°C • Partly Cloudy</span>
+      </div>
+    </div>
+    {% endblock %}
+
+    <!-- Profile Overview Section -->
+     {% block profile %}
+    <div class="profile-section">
+      <div class="profile-card">
+        <div class="profile-avatar">👨‍💻</div>
+        <div class="profile-name">{{ user_name }}</div>
+        <div class="profile-email">{{ user_name }}</div>
+        
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <span class="profile-stat-number">127</span>
+            <span class="profile-stat-label">Days Active</span>
+          </div>
+          <div class="profile-stat">
+            <span class="profile-stat-number">89%</span>
+            <span class="profile-stat-label">Satisfaction</span>
+          </div>
+        </div>
+        
+        <button class="edit-profile-btn" onclick="editProfile()">
+          ✏️ Edit Profile
+        </button>
+      </div>
+
+      <div class="home-overview">
+        <div class="overview-title">Home Overview</div>
+        <div class="overview-grid">
+          <div class="overview-item">
+            <span class="overview-icon">💡</span>
+            <div class="overview-count">8</div>
+            <div class="overview-label">Smart Lights</div>
+          </div>
+          <div class="overview-item">
+            <span class="overview-icon">🌡️</span>
+            <div class="overview-count">3</div>
+            <div class="overview-label">Climate Zones</div>
+          </div>
+          <div class="overview-item">
+            <span class="overview-icon">🔒</span>
+            <div class="overview-count">4</div>
+            <div class="overview-label">Security Devices</div>
+          </div>
+          <div class="overview-item">
+            <span class="overview-icon">📱</span>
+            <div class="overview-count">12</div>
+            <div class="overview-label">Connected Devices</div>
+          </div>
+          <div class="overview-item">
+            <span class="overview-icon">⚡</span>
+            <div class="overview-count">2.4</div>
+            <div class="overview-label">kW Usage</div>
+          </div>
+          <div class="overview-item">
+            <span class="overview-icon">🏠</span>
+            <div class="overview-count">98%</div>
+            <div class="overview-label">System Health</div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+    <!-- Quick Stats -->
+    {% block quick_stats %}
+    <div class="glass-card">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-number">8</span>
+          <span class="stat-label">Devices Online</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">24°C</span>
+          <span class="stat-label">Temperature</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">47%</span>
+          <span class="stat-label">Energy Saved</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">🔒</span>
+          <span class="stat-label">Secure</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene Controls -->
+    <div class="glass-card">
+      <h3 style="text-align: center; margin-bottom: 2rem;">Quick Scenes</h3>
+      <div class="scene-buttons">
+        <button class="scene-btn" onclick="activateScene('home')">🏠 I'm Home</button>
+        <button class="scene-btn" onclick="activateScene('away')">🚗 Away</button>
+        <button class="scene-btn" onclick="activateScene('sleep')">🌙 Good Night</button>
+        <button class="scene-btn" onclick="activateScene('party')">🎉 Party Mode</button>
+        <button class="scene-btn active" onclick="activateScene('comfort')">☀️ Comfort</button>
+      </div>
+    </div>
+
+    <!-- Device Controls -->
+    <div class="devices-grid">
+      <!-- Lighting Control -->
+      <div class="device-card" onclick="toggleDevice('lights')">
+        <div class="device-icon" id="lightsIcon">💡</div>
+        <div class="device-title">Smart Lighting</div>
+        <div class="device-status" id="lightsStatus">5 lights connected</div>
+        <input type="range" class="control-slider" id="brightnessSlider" min="0" max="100" value="75" 
+               onclick="event.stopPropagation()" oninput="updateBrightness(this.value)">
+        <div>Brightness: <span id="brightnessValue">75</span>%</div>
+      </div>
+
+      <!-- Climate Control -->
+      <div class="device-card" onclick="toggleDevice('climate')">
+        <div class="device-icon" id="climateIcon">🌡️</div>
+        <div class="device-title">Climate Control</div>
+        <div class="device-status" id="climateStatus">Heating: ON</div>
+        <input type="range" class="control-slider" id="tempSlider" min="16" max="30" value="24"
+               onclick="event.stopPropagation()" oninput="updateTemperature(this.value)">
+        <div>Target: <span id="tempValue">24</span>°C</div>
+      </div>
+
+      <!-- Security System -->
+      <div class="device-card" onclick="toggleDevice('security')">
+        <div class="device-icon" id="securityIcon">🔒</div>
+        <div class="device-title">Security System</div>
+        <div class="device-status" id="securityStatus">Armed • All Clear</div>
+        <label class="toggle-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" id="securityToggle" checked onchange="toggleSecurity()">
+          <span class="slider"></span>
+        </label>
+        <div>System Status</div>
+      </div>
+
+      <!-- Entertainment -->
+      <div class="device-card" onclick="toggleDevice('entertainment')">
+        <div class="device-icon" id="entertainmentIcon">🎵</div>
+        <div class="device-title">Entertainment</div>
+        <div class="device-status" id="entertainmentStatus">Playing: Chill Vibes</div>
+        <input type="range" class="control-slider" id="volumeSlider" min="0" max="100" value="45"
+               onclick="event.stopPropagation()" oninput="updateVolume(this.value)">
+        <div>Volume: <span id="volumeValue">45</span>%</div>
+      </div>
+
+      <!-- Smart Appliances -->
+      <div class="device-card" onclick="toggleDevice('appliances')">
+        <div class="device-icon" id="appliancesIcon">🏠</div>
+        <div class="device-title">Smart Appliances</div>
+        <div class="device-status" id="appliancesStatus">3 devices active</div>
+        <div style="margin-top: 1rem;">
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="fridgeToggle" checked onchange="toggleAppliance('fridge')">
+            <span class="slider"></span>
+          </label>
+          <div style="margin-top: 0.5rem;">Smart Fridge</div>
+        </div>
+      </div>
+
+      <!-- Energy Monitor -->
+      <div class="device-card">
+        <div class="device-icon pulse">⚡</div>
+        <div class="device-title">Energy Monitor</div>
+        <div class="device-status">Real-time Usage</div>
+        <div style="margin: 1rem 0;">
+          <div>Current: <strong id="currentUsage">2.4</strong> kW</div>
+          <div>Today: <strong>18.7</strong> kWh</div>
+          <div style="color: #4CAF50;">↓ 12% vs yesterday</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function editProfile() {
+      alert('Profile editing feature coming soon!');
+      // In a real app, this would open a profile editing modal or page
+    }
+
+    // Initialize particles
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.width = Math.random() * 4 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+        container.appendChild(particle);
+      }
+    }
+
+    // Update time
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+      const dateString = now.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      document.getElementById('currentTime').textContent = `${timeString} • ${dateString}`;
+    }
+
+    // Device control functions
+    function toggleDevice(device) {
+      console.log(`Toggling ${device}`);
+      // Add visual feedback
+      const deviceCard = event.currentTarget;
+      deviceCard.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        deviceCard.style.transform = '';
+      }, 150);
+    }
+
+    function updateBrightness(value) {
+      document.getElementById('brightnessValue').textContent = value;
+      const icon = document.getElementById('lightsIcon');
+      if (value > 50) {
+        icon.textContent = '💡';
+      } else if (value > 0) {
+        icon.textContent = '🔅';
+      } else {
+        icon.textContent = '⚫';
+      }
+    }
+
+    function updateTemperature(value) {
+      document.getElementById('tempValue').textContent = value;
+      const icon = document.getElementById('climateIcon');
+      if (value > 25) {
+        icon.textContent = '🔥';
+      } else if (value < 20) {
+        icon.textContent = '❄️';
+      } else {
+        icon.textContent = '🌡️';
+      }
+    }
+
+    function updateVolume(value) {
+      document.getElementById('volumeValue').textContent = value;
+      const icon = document.getElementById('entertainmentIcon');
+      if (value > 70) {
+        icon.textContent = '🔊';
+      } else if (value > 30) {
+        icon.textContent = '🔉';
+      } else if (value > 0) {
+        icon.textContent = '🔈';
+      } else {
+        icon.textContent = '🔇';
+      }
+    }
+
+    function toggleSecurity() {
+      const toggle = document.getElementById('securityToggle');
+      const status = document.getElementById('securityStatus');
+      const icon = document.getElementById('securityIcon');
+      
+      if (toggle.checked) {
+        status.textContent = 'Armed • All Clear';
+        icon.textContent = '🔒';
+      } else {
+        status.textContent = 'Disarmed';
+        icon.textContent = '🔓';
+      }
+    }
+
+    function toggleAppliance(appliance) {
+      console.log(`Toggling ${appliance}`);
+    }
+
+    function activateScene(scene) {
+      // Remove active class from all buttons
+      document.querySelectorAll('.scene-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Add active class to clicked button
+      event.target.classList.add('active');
+      
+      // Scene-specific actions
+      switch(scene) {
+        case 'home':
+          document.getElementById('brightnessSlider').value = 80;
+          document.getElementById('tempSlider').value = 22;
+          updateBrightness(80);
+          updateTemperature(22);
+          break;
+        case 'away':
+          document.getElementById('brightnessSlider').value = 0;
+          document.getElementById('tempSlider').value = 18;
+          updateBrightness(0);
+          updateTemperature(18);
+          break;
+        case 'sleep':
+          document.getElementById('brightnessSlider').value = 10;
+          document.getElementById('tempSlider').value = 20;
+          updateBrightness(10);
+          updateTemperature(20);
+          break;
+        case 'party':
+          document.getElementById('brightnessSlider').value = 100;
+          document.getElementById('volumeSlider').value = 80;
+          updateBrightness(100);
+          updateVolume(80);
+          break;
+        case 'comfort':
+          document.getElementById('brightnessSlider').value = 75;
+          document.getElementById('tempSlider').value = 24;
+          updateBrightness(75);
+          updateTemperature(24);
+          break;
+      }
+      
+      console.log(`Activated ${scene} scene`);
+    }
+
+    // Simulate real-time energy usage
+    function updateEnergyUsage() {
+      const usage = (Math.random() * 2 + 1.5).toFixed(1);
+      document.getElementById('currentUsage').textContent = usage;
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      createParticles();
+      updateTime();
+      setInterval(updateTime, 1000);
+      setInterval(updateEnergyUsage, 3000);
+      
+      // Add some initial animations
+      setTimeout(() => {
+        document.querySelectorAll('.device-card').forEach((card, index) => {
+          setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, index * 100);
+        });
+      }, 500);
+    });
+
+    // Add touch feedback for mobile
+    document.addEventListener('touchstart', function(e) {
+      if (e.target.closest('.device-card')) {
+        e.target.closest('.device-card').style.transform = 'scale(0.98)';
+      }
+    });
+
+    document.addEventListener('touchend', function(e) {
+      if (e.target.closest('.device-card')) {
+        setTimeout(() => {
+          e.target.closest('.device-card').style.transform = '';
+        }, 100);
+      }
+    });
+  </script>
+</body>
+</html>
+
+

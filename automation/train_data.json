@@ -1,0 +1,19 @@
+[
+    {
+      "instruction": "Turn on the living room lights",
+      "response": "Turning on the living room lights now."
+    },
+    {
+      "instruction": "Lock the front door",
+      "response": "Front door locked successfully."
+    },
+    {
+      "instruction": "Set the fan speed to 3",
+      "response": "Setting the fan speed to level 3."
+    },
+    {
+      "instruction": "Show me the security camera feed",
+      "response": "Displaying the live security camera feed."
+    }
+  ]
+  

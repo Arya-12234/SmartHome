@@ -1,0 +1,124 @@
+
+ {% load static %}
+
+ {% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        .plan-details {
+            background: #20c997;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .payment-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #fff;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+        .payment-option:hover {
+            border-color: #20c997;
+            background: #f8f9fa;
+        }
+        .payment-option i {
+            font-size: 24px;
+            color: #20c997;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+       <div class="container">
+        <h2>Complete Your Payment</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <p style="color:firebrick;">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
+        {% endif %} 
+
+        <div class="plan-details" id="plan-name">Selected Plan: </div>
+
+        <div class="payment-options">
+            <a href="/payment" class="payment-option">
+                <i class="fas fa-mobile-alt"></i> Pay with M-Pesa
+            </a>
+            <!-- 
+            <div class="payment-option" onclick="payWithMpesa()">
+                <i class="fas fa-mobile-alt"></i> Pay with M-Pesa
+            </div> 
+            -->
+
+            <div class="payment-option" onclick="payWithMastercard()">
+                <i class="fas fa-credit-card"></i> Pay with Mastercard/Visa
+            </div>
+            <div class="payment-option" onclick="payWithPaypal()">
+                <i class="fab fa-paypal"></i> Pay with PayPal
+            </div>
+        </div>
+
+        <!-- ✅ Add your "Purchase" button here -->
+        <div style="margin-top: 20px;">
+            <a href="{% url 'checkout-plan' plan.id %}" class="btn">Purchase</a>
+        </div>
+    </div>
+
+    <script>
+        // Get the selected plan from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const plan = urlParams.get('plan');
+        document.getElementById('plan-name').innerText = "Selected Plan: " + (plan ? plan : "No Plan Selected");
+
+        function payWithMpesa() {
+            alert("Redirecting to M-Pesa payment...");
+            window.location.href = "mpesa_payment.html?plan=" + plan;
+        }
+
+        function payWithMastercard() {
+            alert("Redirecting to Mastercard payment...");
+            window.location.href = "mastercard_payment.html?plan=" + plan;
+        }
+
+        function payWithPaypal() {
+            alert("Redirecting to PayPal...");
+            window.location.href = "paypal_payment.html?plan=" + plan;
+        }
+    </script>
+
+</body>
+
+
+{% endblock %}

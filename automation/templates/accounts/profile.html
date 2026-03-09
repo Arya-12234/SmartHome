@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Home Control Center</title>
+  
+
+<!-- css -->
+ <style>
+ * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, rgba(0, 166, 255, 0.3) 0%, transparent 50%), #1a1a2e;
+      min-height: 100vh;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      position: relative;
+    }
+
+    /* Animated background particles */
+    .bg-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.1;
+    }
+
+    .particle {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    /* Header */
+    .dashboard-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .dashboard-header h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #fff, rgba(0, 166, 255, 0.8));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      text-shadow: none;
+    }
+
+    .time-display {
+      font-size: 1.2rem;
+      opacity: 0.8;
+      margin-bottom: 1rem;
+    }
+
+    .weather-widget {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      margin-top: 1rem;
+    }
+
+    /* Glass morphism cards */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s;
+    }
+
+    .glass-card:hover::before {
+      left: 100%;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Device grid */
+    .devices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .device-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      border-radius: 25px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .device-card:hover {
+      transform: scale(1.05) rotateY(5deg);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .device-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      display: block;
+      transition: all 0.3s ease;
+    }
+
+    .device-card:hover .device-icon {
+      transform: scale(1.2) rotateZ(10deg);
+    }
+
+    .device-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .device-status {
+      font-size: 1rem;
+      opacity: 0.8;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Control elements */
+    .control-slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      outline: none;
+      margin: 1rem 0;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .control-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, rgba(0, 166, 255, 0.8), rgba(0, 166, 255, 1));
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .control-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+      margin: 1rem 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.2);
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background: white;
+      transition: 0.4s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    input:checked + .slider {
+      background: linear-gradient(45deg, #4CAF50, #45a049);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    /* Profile Overview Section */
+    .profile-section {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .profile-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px);
+      border-radius: 25px;
+      padding: 2rem;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(45deg, rgba(0, 166, 255, 0.3), rgba(0, 166, 255, 0.6));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .profile-card:hover .profile-avatar {
+      transform: scale(1.1);
+      box-shadow: 0 15px 30px rgba(0, 166, 255, 0.3);
+    }
+
+    .profile-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(45deg, #fff, rgba(0, 166, 255, 0.8));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .profile-email {
+      opacity: 0.8;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-stat {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+
+    .profile-stat-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: block;
+      color: rgba(0, 166, 255, 0.9);
+    }
+
+    .profile-stat-label {
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+
+    .edit-profile-btn {
+      background: linear-gradient(45deg, rgba(0, 166, 255, 0.3), rgba(0, 166, 255, 0.5));
+      border: 1px solid rgba(0, 166, 255, 0.4);
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .edit-profile-btn:hover {
+      background: linear-gradient(45deg, rgba(0, 166, 255, 0.5), rgba(0, 166, 255, 0.7));
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 166, 255, 0.2);
+    }
+
+    .home-overview {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-radius: 25px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .overview-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(45deg, #fff, rgba(0, 166, 255, 0.8));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .overview-item {
+      text-align: center;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .overview-item:hover {
+      background: rgba(0, 166, 255, 0.2);
+      transform: translateY(-3px);
+    }
+
+    .overview-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .overview-count {
+      font-size: 2rem;
+      font-weight: 700;
+      color: rgba(0, 166, 255, 0.9);
+      margin-bottom: 0.5rem;
+    }
+
+    .overview-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    /* Stats section */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+      background: rgba(0, 166, 255, 0.2);
+      transform: translateY(-3px);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(45deg, #fff, rgba(0, 166, 255, 0.8));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Scene buttons */
+    .scene-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+
+    .scene-btn {
+      background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+      border: none;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .scene-btn:hover {
+      background: linear-gradient(45deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .scene-btn.active {
+      background: linear-gradient(45deg, #4CAF50, #45a049);
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .profile-section {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .overview-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .dashboard-container {
+        padding: 1rem;
+      }
+      
+      .dashboard-header h1 {
+        font-size: 2rem;
+      }
+      
+      .devices-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .scene-buttons {
+        flex-direction: column;
+      }
+    }
+
+    /* Loading animation */
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 1rem auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+</style>
+</head>
+<body>
+  <div class="bg-particles" id="particles"></div>
+  
+  <div class="dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <h1>Welcome Home, {{ user_name }}</h1>
+      <div class="time-display" id="currentTime"></div>
+      <div class="weather-widget">
+        <span>🌤️ 22°C • Partly Cloudy</span>
+      </div>
+    </div>
+
+    <!-- Profile Overview Section -->
+    <div class="profile-section">
+      <div class="profile-card">
+        <div class="profile-avatar">👨‍💻</div>
+        <div class="profile-name">{{ user_name }}</div>
+        <div class="profile-email">{{ user_name }}</div>
+        
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <span class="profile-stat-number">127</span>
+            <span class="profile-stat-label">Days Active</span>
+          </div>
+          <div class="profile-stat">
+            <span class="profile-stat-number">89%</span>
+            <span class="profile-stat-label">Satisfaction</span>
+          </div>
+        </div>
+        
+        <button class="edit-profile-btn" onclick="editProfile()">
+          ✏️ Edit Profile
+        </button>
+      </div>
+
+      <div class="home-overview">
+        <div class="overview-title">Home Overview</div>
+        <div class="overview-grid">
+          <div class="overview-item">
+            <span class="overview-icon">💡</span>
+            <div class="overview-count">8</div>
+            <div class="overview-label">Smart Lights</div>
+          </div>
+          <div class="overview-item">
+            <span class="overview-icon">🌡️</span>
+            <div class="overview-count">3</div>
+            <div class="overview-label">Climate Zones</div>
+          </div>
+          <div class="overview-item">
+            <span class="overview-icon">🔒</span>
+            <div class="overview-count">4</div>
+            <div class="overview-label">Security Devices</div>
+          </div>
+          <div class="overview-item">
+            <span class="overview-icon">📱</span>
+            <div class="overview-count">12</div>
+            <div class="overview-label">Connected Devices</div>
+          </div>
+          <div class="overview-item">
+            <span class="overview-icon">⚡</span>
+            <div class="overview-count">2.4</div>
+            <div class="overview-label">kW Usage</div>
+          </div>
+          <div class="overview-item">
+            <span class="overview-icon">🏠</span>
+            <div class="overview-count">98%</div>
+            <div class="overview-label">System Health</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Quick Stats -->
+    <div class="glass-card">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-number">8</span>
+          <span class="stat-label">Devices Online</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">24°C</span>
+          <span class="stat-label">Temperature</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">47%</span>
+          <span class="stat-label">Energy Saved</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">🔒</span>
+          <span class="stat-label">Secure</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene Controls -->
+    <div class="glass-card">
+      <h3 style="text-align: center; margin-bottom: 2rem;">Quick Scenes</h3>
+      <div class="scene-buttons">
+        <button class="scene-btn" onclick="activateScene('home')">🏠 I'm Home</button>
+        <button class="scene-btn" onclick="activateScene('away')">🚗 Away</button>
+        <button class="scene-btn" onclick="activateScene('sleep')">🌙 Good Night</button>
+        <button class="scene-btn" onclick="activateScene('party')">🎉 Party Mode</button>
+        <button class="scene-btn active" onclick="activateScene('comfort')">☀️ Comfort</button>
+      </div>
+    </div>
+
+    <!-- Device Controls -->
+    <div class="devices-grid">
+      <!-- Lighting Control -->
+      <div class="device-card" onclick="toggleDevice('lights')">
+        <div class="device-icon" id="lightsIcon">💡</div>
+        <div class="device-title">Smart Lighting</div>
+        <div class="device-status" id="lightsStatus">5 lights connected</div>
+        <input type="range" class="control-slider" id="brightnessSlider" min="0" max="100" value="75" 
+               onclick="event.stopPropagation()" oninput="updateBrightness(this.value)">
+        <div>Brightness: <span id="brightnessValue">75</span>%</div>
+      </div>
+
+      <!-- Climate Control -->
+      <div class="device-card" onclick="toggleDevice('climate')">
+        <div class="device-icon" id="climateIcon">🌡️</div>
+        <div class="device-title">Climate Control</div>
+        <div class="device-status" id="climateStatus">Heating: ON</div>
+        <input type="range" class="control-slider" id="tempSlider" min="16" max="30" value="24"
+               onclick="event.stopPropagation()" oninput="updateTemperature(this.value)">
+        <div>Target: <span id="tempValue">24</span>°C</div>
+      </div>
+
+      <!-- Security System -->
+      <div class="device-card" onclick="toggleDevice('security')">
+        <div class="device-icon" id="securityIcon">🔒</div>
+        <div class="device-title">Security System</div>
+        <div class="device-status" id="securityStatus">Armed • All Clear</div>
+        <label class="toggle-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" id="securityToggle" checked onchange="toggleSecurity()">
+          <span class="slider"></span>
+        </label>
+        <div>System Status</div>
+      </div>
+
+      <!-- Entertainment -->
+      <div class="device-card" onclick="toggleDevice('entertainment')">
+        <div class="device-icon" id="entertainmentIcon">🎵</div>
+        <div class="device-title">Entertainment</div>
+        <div class="device-status" id="entertainmentStatus">Playing: Chill Vibes</div>
+        <input type="range" class="control-slider" id="volumeSlider" min="0" max="100" value="45"
+               onclick="event.stopPropagation()" oninput="updateVolume(this.value)">
+        <div>Volume: <span id="volumeValue">45</span>%</div>
+      </div>
+
+      <!-- Smart Appliances -->
+      <div class="device-card" onclick="toggleDevice('appliances')">
+        <div class="device-icon" id="appliancesIcon">🏠</div>
+        <div class="device-title">Smart Appliances</div>
+        <div class="device-status" id="appliancesStatus">3 devices active</div>
+        <div style="margin-top: 1rem;">
+          <label class="toggle-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="fridgeToggle" checked onchange="toggleAppliance('fridge')">
+            <span class="slider"></span>
+          </label>
+          <div style="margin-top: 0.5rem;">Smart Fridge</div>
+        </div>
+      </div>
+
+      <!-- Energy Monitor -->
+      <div class="device-card">
+        <div class="device-icon pulse">⚡</div>
+        <div class="device-title">Energy Monitor</div>
+        <div class="device-status">Real-time Usage</div>
+        <div style="margin: 1rem 0;">
+          <div>Current: <strong id="currentUsage">2.4</strong> kW</div>
+          <div>Today: <strong>18.7</strong> kWh</div>
+          <div style="color: #4CAF50;">↓ 12% vs yesterday</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function editProfile() {
+      alert('Profile editing feature coming soon!');
+      // In a real app, this would open a profile editing modal or page
+    }
+
+    // Initialize particles
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.width = Math.random() * 4 + 2 + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+        container.appendChild(particle);
+      }
+    }
+
+    // Update time
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+      const dateString = now.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      document.getElementById('currentTime').textContent = `${timeString} • ${dateString}`;
+    }
+
+    // Device control functions
+    function toggleDevice(device) {
+      console.log(`Toggling ${device}`);
+      // Add visual feedback
+      const deviceCard = event.currentTarget;
+      deviceCard.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        deviceCard.style.transform = '';
+      }, 150);
+    }
+
+    function updateBrightness(value) {
+      document.getElementById('brightnessValue').textContent = value;
+      const icon = document.getElementById('lightsIcon');
+      if (value > 50) {
+        icon.textContent = '💡';
+      } else if (value > 0) {
+        icon.textContent = '🔅';
+      } else {
+        icon.textContent = '⚫';
+      }
+    }
+
+    function updateTemperature(value) {
+      document.getElementById('tempValue').textContent = value;
+      const icon = document.getElementById('climateIcon');
+      if (value > 25) {
+        icon.textContent = '🔥';
+      } else if (value < 20) {
+        icon.textContent = '❄️';
+      } else {
+        icon.textContent = '🌡️';
+      }
+    }
+
+    function updateVolume(value) {
+      document.getElementById('volumeValue').textContent = value;
+      const icon = document.getElementById('entertainmentIcon');
+      if (value > 70) {
+        icon.textContent = '🔊';
+      } else if (value > 30) {
+        icon.textContent = '🔉';
+      } else if (value > 0) {
+        icon.textContent = '🔈';
+      } else {
+        icon.textContent = '🔇';
+      }
+    }
+
+    function toggleSecurity() {
+      const toggle = document.getElementById('securityToggle');
+      const status = document.getElementById('securityStatus');
+      const icon = document.getElementById('securityIcon');
+      
+      if (toggle.checked) {
+        status.textContent = 'Armed • All Clear';
+        icon.textContent = '🔒';
+      } else {
+        status.textContent = 'Disarmed';
+        icon.textContent = '🔓';
+      }
+    }
+
+    function toggleAppliance(appliance) {
+      console.log(`Toggling ${appliance}`);
+    }
+
+    function activateScene(scene) {
+      // Remove active class from all buttons
+      document.querySelectorAll('.scene-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Add active class to clicked button
+      event.target.classList.add('active');
+      
+      // Scene-specific actions
+      switch(scene) {
+        case 'home':
+          document.getElementById('brightnessSlider').value = 80;
+          document.getElementById('tempSlider').value = 22;
+          updateBrightness(80);
+          updateTemperature(22);
+          break;
+        case 'away':
+          document.getElementById('brightnessSlider').value = 0;
+          document.getElementById('tempSlider').value = 18;
+          updateBrightness(0);
+          updateTemperature(18);
+          break;
+        case 'sleep':
+          document.getElementById('brightnessSlider').value = 10;
+          document.getElementById('tempSlider').value = 20;
+          updateBrightness(10);
+          updateTemperature(20);
+          break;
+        case 'party':
+          document.getElementById('brightnessSlider').value = 100;
+          document.getElementById('volumeSlider').value = 80;
+          updateBrightness(100);
+          updateVolume(80);
+          break;
+        case 'comfort':
+          document.getElementById('brightnessSlider').value = 75;
+          document.getElementById('tempSlider').value = 24;
+          updateBrightness(75);
+          updateTemperature(24);
+          break;
+      }
+      
+      console.log(`Activated ${scene} scene`);
+    }
+
+    // Simulate real-time energy usage
+    function updateEnergyUsage() {
+      const usage = (Math.random() * 2 + 1.5).toFixed(1);
+      document.getElementById('currentUsage').textContent = usage;
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      createParticles();
+      updateTime();
+      setInterval(updateTime, 1000);
+      setInterval(updateEnergyUsage, 3000);
+      
+      // Add some initial animations
+      setTimeout(() => {
+        document.querySelectorAll('.device-card').forEach((card, index) => {
+          setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, index * 100);
+        });
+      }, 500);
+    });
+
+    // Add touch feedback for mobile
+    document.addEventListener('touchstart', function(e) {
+      if (e.target.closest('.device-card')) {
+        e.target.closest('.device-card').style.transform = 'scale(0.98)';
+      }
+    });
+
+    document.addEventListener('touchend', function(e) {
+      if (e.target.closest('.device-card')) {
+        setTimeout(() => {
+          e.target.closest('.device-card').style.transform = '';
+        }, 100);
+      }
+    });
+  </script>
+</body>
+</html>
+
+

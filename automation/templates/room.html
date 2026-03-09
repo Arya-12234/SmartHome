@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Room Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, rgba(0, 166, 255, 0.3) 0%, transparent 50%), #1a1a2e;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        #username {
+            color: #00a6ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        #username:hover {
+            color: #4facfe;
+            border-bottom: 2px solid #4facfe;
+            text-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 35px;
+            margin-bottom: 30px;
+        }
+
+        .room-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0, 166, 255, 0.1), 
+                        0 0 40px rgba(255, 255, 255, 0.05),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .room-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, 
+                rgba(0, 166, 255, 0.3) 0%, 
+                rgba(79, 172, 254, 0.2) 50%, 
+                rgba(255, 255, 255, 0.1) 100%);
+            border-radius: 22px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .room-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 60px rgba(0, 166, 255, 0.2), 
+                        0 0 80px rgba(255, 255, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .room-card:hover::before {
+            opacity: 1;
+        }
+
+        .room-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .room-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 24px;
+        }
+
+        .room-title {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .control-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 166, 255, 0.05);
+        }
+
+        .control-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .control-item.active {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .control-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .control-label {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .slider-container {
+            grid-column: span 2;
+            margin-top: 10px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+            transition: all 0.3s ease;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .quick-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .quick-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+
+        .quick-btn.active {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+        }
+
+        .status-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .status-bar.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .room-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .quick-actions {
+                gap: 15px;
+            }
+            
+            .quick-btn {
+                padding: 12px 24px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Hello <span id="username">Mutheu</span>, Welcome Home! 🏠</h1>
+            <p>Manage your connected devices with ease</p>
+        </div>
+
+        <div class="room-grid">
+            <!-- Living Room -->
+            <div class="room-card" data-room="living">
+                <div class="room-header">
+                    <div class="room-icon">🛋️</div>
+                    <div class="room-title">Living Room</div>
+                </div>
+                <div class="controls-grid">
+                    <div class="control-item" data-control="lights">
+                        <span class="control-icon">💡</span>
+                        <div class="control-label">Lights</div>
+                    </div>
+                    <div class="control-item" data-control="tv">
+                        <span class="control-icon">📺</span>
+                        <div class="control-label">TV</div>
+                    </div>
+                    <div class="control-item" data-control="ac">
+                        <span class="control-icon">❄️</span>
+                        <div class="control-label">AC</div>
+                    </div>
+                    <div class="control-item" data-control="music">
+                        <span class="control-icon">🎵</span>
+                        <div class="control-label">Music</div>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="100" value="50" class="slider" id="livingBrightness">
+                        <div class="control-label">Brightness: <span id="livingBrightnessValue">50%</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bedroom -->
+            <div class="room-card" data-room="bedroom">
+                <div class="room-header">
+                    <div class="room-icon">🛏️</div>
+                    <div class="room-title">Bedroom</div>
+                </div>
+                <div class="controls-grid">
+                    <div class="control-item" data-control="lights">
+                        <span class="control-icon">💡</span>
+                        <div class="control-label">Lights</div>
+                    </div>
+                    <div class="control-item" data-control="fan">
+                        <span class="control-icon">🌀</span>
+                        <div class="control-label">Fan</div>
+                    </div>
+                    <div class="control-item" data-control="curtains">
+                        <span class="control-icon">🪟</span>
+                        <div class="control-label">Curtains</div>
+                    </div>
+                    <div class="control-item" data-control="alarm">
+                        <span class="control-icon">⏰</span>
+                        <div class="control-label">Alarm</div>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" min="16" max="30" value="22" class="slider" id="bedroomTemp">
+                        <div class="control-label">Temperature: <span id="bedroomTempValue">22°C</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kitchen -->
+            <div class="room-card" data-room="kitchen">
+                <div class="room-header">
+                    <div class="room-icon">🍳</div>
+                    <div class="room-title">Kitchen</div>
+                </div>
+                <div class="controls-grid">
+                    <div class="control-item" data-control="lights">
+                        <span class="control-icon">💡</span>
+                        <div class="control-label">Lights</div>
+                    </div>
+                    <div class="control-item" data-control="exhaust">
+                        <span class="control-icon">💨</span>
+                        <div class="control-label">Exhaust</div>
+                    </div>
+                    <div class="control-item" data-control="oven">
+                        <span class="control-icon">🔥</span>
+                        <div class="control-label">Oven</div>
+                    </div>
+                    <div class="control-item" data-control="fridge">
+                        <span class="control-icon">🧊</span>
+                        <div class="control-label">Fridge</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security -->
+            <div class="room-card" data-room="security">
+                <div class="room-header">
+                    <div class="room-icon">🔒</div>
+                    <div class="room-title">Security</div>
+                </div>
+                <div class="controls-grid">
+                    <div class="control-item" data-control="doors">
+                        <span class="control-icon">🚪</span>
+                        <div class="control-label">Doors</div>
+                    </div>
+                    <div class="control-item" data-control="cameras">
+                        <span class="control-icon">📹</span>
+                        <div class="control-label">Cameras</div>
+                    </div>
+                    <div class="control-item" data-control="motion">
+                        <span class="control-icon">🚶</span>
+                        <div class="control-label">Motion</div>
+                    </div>
+                    <div class="control-item" data-control="alarm">
+                        <span class="control-icon">🚨</span>
+                        <div class="control-label">Alarm</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="quick-btn" data-action="home">🏠 I'm Home</button>
+            <button class="quick-btn" data-action="away">🚗 Leaving</button>
+            <button class="quick-btn" data-action="sleep">😴 Good Night</button>
+            <button class="quick-btn" data-action="party">🎉 Party Mode</button>
+        </div>
+    </div>
+
+    <div class="status-bar" id="statusBar">
+        <span id="statusText">Device updated successfully!</span>
+    </div>
+
+    <script>
+        class SmartHomeController {
+            constructor() {
+                this.deviceStates = {};
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.initializeDevices();
+            }
+
+            bindEvents() {
+                // Control item clicks
+                document.querySelectorAll('.control-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        this.toggleDevice(e.currentTarget);
+                    });
+                });
+
+                // Slider events
+                document.querySelectorAll('.slider').forEach(slider => {
+                    slider.addEventListener('input', (e) => {
+                        this.updateSlider(e.target);
+                    });
+                });
+
+                // Quick action buttons
+                document.querySelectorAll('.quick-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.executeQuickAction(e.target.dataset.action);
+                    });
+                });
+
+                // Room card hover effects
+                document.querySelectorAll('.room-card').forEach(card => {
+                    card.addEventListener('mouseenter', () => {
+                        card.style.transform = 'translateY(-8px) scale(1.02)';
+                    });
+                    
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = 'translateY(-8px)';
+                    });
+                });
+            }
+
+            initializeDevices() {
+                // Initialize some devices as active
+                const activeDevices = [
+                    'living-lights',
+                    'bedroom-fan',
+                    'security-cameras'
+                ];
+
+                activeDevices.forEach(deviceId => {
+                    const [room, control] = deviceId.split('-');
+                    const device = document.querySelector(`[data-room="${room}"] [data-control="${control}"]`);
+                    if (device) {
+                        device.classList.add('active');
+                        this.deviceStates[deviceId] = true;
+                    }
+                });
+            }
+
+            toggleDevice(element) {
+                const room = element.closest('.room-card').dataset.room;
+                const control = element.dataset.control;
+                const deviceId = `${room}-${control}`;
+
+                element.classList.toggle('active');
+                this.deviceStates[deviceId] = element.classList.contains('active');
+
+                // Add pulse effect
+                element.classList.add('pulse');
+                setTimeout(() => element.classList.remove('pulse'), 1000);
+
+                // Show status
+                this.showStatus(`${control.charAt(0).toUpperCase() + control.slice(1)} ${this.deviceStates[deviceId] ? 'turned on' : 'turned off'} in ${room}`);
+
+                // Special effects for certain devices
+                this.handleSpecialEffects(room, control, this.deviceStates[deviceId]);
+            }
+
+            updateSlider(slider) {
+                const value = slider.value;
+                const valueSpan = document.getElementById(slider.id + 'Value');
+                
+                if (slider.id === 'livingBrightness') {
+                    valueSpan.textContent = `${value}%`;
+                    this.showStatus(`Living room brightness set to ${value}%`);
+                } else if (slider.id === 'bedroomTemp') {
+                    valueSpan.textContent = `${value}°C`;
+                    this.showStatus(`Bedroom temperature set to ${value}°C`);
+                }
+
+                // Visual feedback
+                slider.style.background = `linear-gradient(to right, #4facfe 0%, #00f2fe ${value}%, rgba(255,255,255,0.2) ${value}%, rgba(255,255,255,0.2) 100%)`;
+            }
+
+            executeQuickAction(action) {
+                const btn = document.querySelector(`[data-action="${action}"]`);
+                
+                // Reset all quick buttons
+                document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                switch(action) {
+                    case 'home':
+                        this.setHomeMode();
+                        break;
+                    case 'away':
+                        this.setAwayMode();
+                        break;
+                    case 'sleep':
+                        this.setSleepMode();
+                        break;
+                    case 'party':
+                        this.setPartyMode();
+                        break;
+                }
+
+                setTimeout(() => btn.classList.remove('active'), 3000);
+            }
+
+            setHomeMode() {
+                this.showStatus('🏠 Welcome home! Setting up your perfect environment...');
+                
+                // Turn on lights in living room and kitchen
+                this.activateDevice('living', 'lights');
+                this.activateDevice('kitchen', 'lights');
+                
+                // Set comfortable temperature
+                document.getElementById('bedroomTemp').value = 22;
+                this.updateSlider(document.getElementById('bedroomTemp'));
+                
+                // Turn off security alarm
+                this.deactivateDevice('security', 'alarm');
+            }
+
+            setAwayMode() {
+                this.showStatus('🚗 See you later! Securing your home...');
+                
+                // Turn off most lights except security
+                document.querySelectorAll('[data-control="lights"]').forEach(light => {
+                    light.classList.remove('active');
+                });
+                
+                // Activate security systems
+                this.activateDevice('security', 'cameras');
+                this.activateDevice('security', 'motion');
+                this.activateDevice('security', 'doors');
+            }
+
+            setSleepMode() {
+                this.showStatus('😴 Good night! Setting up sleep mode...');
+                
+                // Turn off entertainment devices
+                this.deactivateDevice('living', 'tv');
+                this.deactivateDevice('living', 'music');
+                
+                // Dim bedroom lights or turn off
+                this.deactivateDevice('bedroom', 'lights');
+                
+                // Lower temperature slightly
+                document.getElementById('bedroomTemp').value = 20;
+                this.updateSlider(document.getElementById('bedroomTemp'));
+            }
+
+            setPartyMode() {
+                this.showStatus('🎉 Party time! Setting the perfect vibe...');
+                
+                // Turn on entertainment systems
+                this.activateDevice('living', 'tv');
+                this.activateDevice('living', 'music');
+                this.activateDevice('living', 'lights');
+                
+                // Set party lighting
+                document.getElementById('livingBrightness').value = 80;
+                this.updateSlider(document.getElementById('livingBrightness'));
+            }
+
+            activateDevice(room, control) {
+                const device = document.querySelector(`[data-room="${room}"] [data-control="${control}"]`);
+                if (device) {
+                    device.classList.add('active');
+                    this.deviceStates[`${room}-${control}`] = true;
+                }
+            }
+
+            deactivateDevice(room, control) {
+                const device = document.querySelector(`[data-room="${room}"] [data-control="${control}"]`);
+                if (device) {
+                    device.classList.remove('active');
+                    this.deviceStates[`${room}-${control}`] = false;
+                }
+            }
+
+            handleSpecialEffects(room, control, isActive) {
+                if (room === 'living' && control === 'lights' && isActive) {
+                    // Create a subtle glow effect
+                    const roomCard = document.querySelector(`[data-room="${room}"]`);
+                    roomCard.style.boxShadow = '0 25px 50px rgba(255, 255, 255, 0.1)';
+                    setTimeout(() => {
+                        roomCard.style.boxShadow = '';
+                    }, 2000);
+                }
+            }
+
+            showStatus(message) {
+                const statusBar = document.getElementById('statusBar');
+                const statusText = document.getElementById('statusText');
+                
+                statusText.textContent = message;
+                statusBar.classList.add('show');
+                
+                setTimeout(() => {
+                    statusBar.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // Initialize the smart home controller when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new SmartHomeController();
+            
+            // Allow user to set their name
+            const usernameSpan = document.getElementById('username');
+            usernameSpan.addEventListener('click', () => {
+                const newName = prompt('Enter your name:', usernameSpan.textContent);
+                if (newName && newName.trim() !== '') {
+                    usernameSpan.textContent = newName.trim();
+                }
+            });
+        });
+
+        // Add some dynamic background effects
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            document.body.style.background = `linear-gradient(135deg, 
+                rgba(0, 166, 255, ${0.2 + x * 0.2}) 0%, 
+                transparent 50%), 
+                hsl(${250 + x * 20}, ${30 + y * 20}%, ${12 + y * 8}%)`;
+        });
+    </script>
+</body>
+</html>

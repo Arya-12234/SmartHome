@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<title>Chatbot</title>
+<style>
+    /* Chatbot icon */
+    #chatbot-icon {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background-color: #87CEFA; /* Light Blue */
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    #chatbot-icon img {
+        width: 30px;
+        height: 30px;
+    }
+
+    /* Chatbox container */
+    #chatbox-container {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 300px;
+        background-color: #E3F2FD; /* Light Blue Shade */
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    /* Chatbox header */
+    #chatbox-header {
+        background-color: #87CEFA; /* Light Blue */
+        color: white;
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
+        position: relative;
+    }
+
+    #close-chat {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    /* Chat messages */
+    #chatbox {
+        height: 300px;
+        padding: 10px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-message, .bot-message {
+        margin: 5px;
+        padding: 8px;
+        border-radius: 5px;
+        max-width: 70%;
+    }
+
+    .user-message {
+        background-color: #B0E0E6; /* Lighter Blue */
+        align-self: flex-end;
+    }
+
+    .bot-message {
+        background-color: #ADD8E6; /* Another Light Blue */
+        align-self: flex-start;
+    }
+
+    /* Chat input */
+    #chat-form {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ccc;
+        background-color: #E3F2FD; /* Light Blue Shade */
+    }
+
+    #user-input {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        border-radius: 5px;
+        outline: none;
+        background-color: white;
+    }
+
+    #send-btn {
+        background-color: #87CEFA; /* Light Blue */
+        color: white;
+        border: none;
+        padding: 8px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+
+    #send-btn:hover {
+        background-color: #5CACEE; /* Slightly darker blue */
+    }
+</style>
+
+<body>
+
+<!-- Chatbot Icon -->
+<div id="chatbot-icon">
+    <img src="{% static 'chat_icon.png' %}" alt="Chat">
+</div>
+
+<!-- Chatbox -->
+<div id="chatbox-container">
+    <div id="chatbox-header">
+        Chatbot
+        <span id="close-chat">&times;</span>
+    </div>
+    <div id="chatbox"></div>
+    <form id="chat-form">
+        <input type="text" id="user-input" placeholder="Type a message..." required>
+        <button type="submit" id="send-btn">Send</button>
+    </form>
+</div>
+
+<script>
+    // Get elements
+    const chatIcon = document.getElementById('chatbot-icon');
+    const chatContainer = document.getElementById('chatbox-container');
+    const closeChat = document.getElementById('close-chat');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const chatbox = document.getElementById('chatbox');
+
+    // Toggle chatbox visibility
+    chatIcon.addEventListener('click', () => {
+        chatContainer.style.display = 'flex';
+    });
+
+    closeChat.addEventListener('click', () => {
+        chatContainer.style.display = 'none';
+    });
+
+    // Handle chat submission
+    chatForm.onsubmit = async function(e) {
+        e.preventDefault();
+        let userMessage = userInput.value.trim();
+        if (!userMessage) return;
+
+        // Display user message
+        chatbox.innerHTML += `<div class="user-message">${userMessage}</div>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+        userInput.value = '';
+
+        // Send message to API
+        try {
+            let response = await fetch("{% url 'chatbot' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ message: userMessage })
+            });
+
+            let data = await response.json();
+
+            // Display bot response
+            chatbox.innerHTML += `<div class="bot-message">${data.message || "Sorry, I didn’t understand that."}</div>`;
+            chatbox.scrollTop = chatbox.scrollHeight;
+        } catch (error) {
+            console.error("Chatbot error:", error);
+            chatbox.innerHTML += `<div class="bot-message">Error: Could not reach the server.</div>`;
+        }
+    };
+</script>
+
+</body>
+</html>
+
+{% endblock %}

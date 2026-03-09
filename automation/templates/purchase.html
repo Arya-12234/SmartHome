@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container py-5">
+        <h2>Confirm Your Purchase</h2>
+        <p>You are about to purchase the {{ plan.name }} plan.</p>
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">{{ plan.name }}</h3>
+                <p><strong>Price:</strong> Ksh. {{ plan.price }}</p>
+                <p><strong>Description:</strong> {{ plan.description }}</p>
+                <!-- Payment form -->
+                <form id="payment-form" method="POST" action="{% url 'payment' plan.id %}">
+                    {% csrf_token %}
+                    <label for="phone_number">Phone Number:</label>
+                    <input type="text" id="phone_number" name="phone_number" placeholder="2547XXXXXXXX" required>
+
+                    <label for="amount">Amount:</label>
+                    <input type="number" id="amount" name="amount" value="{{ plan.price }}" readonly> <!-- Amount is dynamic based on plan -->
+
+                    <button type="submit" class="btn btn-success">Proceed to Payment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
